@@ -1,6 +1,5 @@
 package com.interview.athletesapplication
 
-import androidx.compose.runtime.collectAsState
 import com.interview.athletesapplication.model.Athlete
 import com.interview.athletesapplication.model.FullName
 import com.interview.athletesapplication.repository.AthleteRepository
@@ -9,20 +8,13 @@ import com.interview.athletesapplication.ui.screens.atheletelist.AthleteListView
 import com.interview.athletesapplication.usecase.AddAthleteUseCase
 import com.interview.athletesapplication.usecase.GetAllAthletesUseCase
 import io.kotest.matchers.shouldBe
-import io.mockk.Runs
-import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 
 class AthleteViewModelTest {
@@ -37,7 +29,7 @@ class AthleteViewModelTest {
     @Test
     fun `Test for adding an athlete`() = testScope.runTest {
         val athlete = Athlete(
-            name = FullName("MS", "Dhoni"),
+            fullName = FullName("MS", "Dhoni"),
             age = 38
         )
         every { athleteRepository.addAthlete(any()) } returns true

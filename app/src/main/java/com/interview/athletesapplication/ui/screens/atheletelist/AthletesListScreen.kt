@@ -2,6 +2,7 @@
 
 package com.interview.athletesapplication.ui.screens.atheletelist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,28 +23,45 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.interview.athletesapplication.UIState
+import com.interview.athletesapplication.model.Athlete
+import com.interview.athletesapplication.model.FullName
 import com.interview.athletesapplication.ui.components.AddAthleteDialog
 import com.interview.athletesapplication.ui.components.AthleteCard
 
 @Composable
 fun AthletesListScreen(athleteListViewModel: AthleteListViewModel) {
     val uiState = athleteListViewModel.uiState.collectAsState()
+    AthleteListScreen(uiState.value, onAddAthlete =
+    { athleteListViewModel.addAthlete(it) })
+}
+
+@Composable
+fun AthleteListScreen(value: UIState<AthleteListUiModel>, onAddAthlete: (Athlete) -> Unit = {}) {
     val showDialog = remember {
         mutableStateOf(false)
     }
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize().padding(8.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
-        when (val currentState = uiState.value) {
+        when (value) {
             is UIState.Content -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    item { Text(text = "Athletes List", style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)) }
-                    items(currentState.viewData.athleteList) {
+                    item {
+                        Text(
+                            text = "Athletes List",
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                    items(value.viewData.athleteList) {
                         AthleteCard(athlete = it)
                     }
                 }
@@ -70,8 +88,62 @@ fun AthletesListScreen(athleteListViewModel: AthleteListViewModel) {
         if (showDialog.value) {
             AddAthleteDialog(
                 onDismiss = { showDialog.value = false },
-                onSubmit = { athleteListViewModel.addAthlete(it) }
+                onSubmit = onAddAthlete
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun AthleteListScreenContent() {
+    MaterialTheme {
+        val athletes = listOf(
+            Athlete(
+                FullName(
+                    "MS",
+                    "Dhoni"
+                ), 32
+            ),
+            Athlete(
+                FullName(
+                    "Virat",
+                    "Kohli"
+                ), 32
+            ),
+            Athlete(
+                FullName(
+                    "Rohit",
+                    "Sharma"
+                ), 32
+            ),
+            Athlete(
+                FullName(
+                    "Sachin",
+                    "Tendulkar"
+                ), 32
+            ),
+            Athlete(
+                FullName(
+                    "Sourav",
+                    "Ganguly"
+                ), 32
+            ),
+        )
+        AthleteListScreen(
+            value = UIState.Content(
+                AthleteListUiModel(
+                    athletes
+                )
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun AthleteListLoadingStatePreview() {
+    MaterialTheme {
+        AthleteListScreen(value = UIState.Loading)
     }
 }

@@ -2,8 +2,6 @@
 
 package com.interview.athletesapplication.ui.components
 
-import androidx.compose.foundation.layout.Arrangement.End
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -12,15 +10,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.interview.athletesapplication.model.Athlete
@@ -73,7 +69,7 @@ internal fun AddAthleteDialog(
             )
             Button(onClick = {
                 val athlete = Athlete(
-                    name = FullName(
+                    fullName = FullName(
                         firstName = firstname.value,
                         lastName = secondName.value
                     ),
@@ -87,4 +83,10 @@ internal fun AddAthleteDialog(
 
         }
     }
+}
+
+@Preview
+@Composable
+fun AddAthleteDialogPreview() {
+    AddAthleteDialog(onDismiss = {}, onSubmit = {})
 }

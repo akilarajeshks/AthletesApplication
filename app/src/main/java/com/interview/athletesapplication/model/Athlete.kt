@@ -1,7 +1,7 @@
 package com.interview.athletesapplication.model
 
 data class Athlete(
-    val name: FullName,
+    val fullName: FullName,
     val age: Int
 )
 
