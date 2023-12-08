@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.interview.athletesapplication.ui.screens.atheletelist
 
 import androidx.compose.foundation.background
@@ -11,10 +9,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.interview.athletesapplication.UIState
@@ -52,19 +51,49 @@ fun AthleteListScreen(value: UIState<AthleteListUiModel>, onAddAthlete: (Athlete
     ) {
         when (value) {
             is UIState.Content -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    item {
+                Scaffold(
+                    topBar = {
                         Text(
                             text = "Athletes List",
-                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(16.dp)
                         )
+                    },
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = {
+                                showDialog.value = true
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                        }
                     }
-                    items(value.viewData.athleteList) {
-                        AthleteCard(athlete = it)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = it.calculateTopPadding()),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (value.viewData.athleteList.isEmpty()) {
+                            Text(
+                                text = "No Athletes added yet, click the + button to add one",
+                                modifier = Modifier.padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(value.viewData.athleteList) {
+                                    AthleteCard(athlete = it)
+                                }
+                            }
+                        }
                     }
+
                 }
+
             }
 
             UIState.Error -> {
@@ -145,5 +174,13 @@ fun AthleteListScreenContent() {
 fun AthleteListLoadingStatePreview() {
     MaterialTheme {
         AthleteListScreen(value = UIState.Loading)
+    }
+}
+
+@Preview
+@Composable
+fun AthleteListEmptyStatePreview() {
+    MaterialTheme {
+        AthleteListScreen(value = UIState.Content(AthleteListUiModel(emptyList())))
     }
 }
