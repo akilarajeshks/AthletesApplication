@@ -22,7 +22,7 @@ class AthleteViewModelTest {
     private lateinit var athleteListViewModel: AthleteListViewModel
     private val testCoroutineDispatcher = StandardTestDispatcher()
     private val testScope = TestScope(testCoroutineDispatcher)
-    private val athleteRepository : AthleteRepository = mockk()
+    private val athleteRepository: AthleteRepository = mockk()
     private val addAthleteUseCase: AddAthleteUseCase = AddAthleteUseCase(athleteRepository)
     private val getAthleteUseCase: GetAllAthletesUseCase = GetAllAthletesUseCase(athleteRepository)
 
@@ -46,6 +46,37 @@ class AthleteViewModelTest {
             athleteListViewModel.uiState.toList(uiStateList)
         }
 
+        athleteListViewModel.addAthlete(athlete)
+        testCoroutineDispatcher.scheduler.advanceUntilIdle()
+        launchJob.cancel()
+
+        uiStateList shouldBe listOf(
+            UIState.Loading,
+            UIState.Content(AthleteListUiModel(listOf(athlete)))
+        )
+    }
+
+    @Test
+    fun `Adding a duplicate athlete does not add it to the list`() = testScope.runTest {
+        val athlete = Athlete(
+            fullName = FullName("MS", "Dhoni"),
+            age = 38
+        )
+        every { athleteRepository.addAthlete(any()) } returns true
+        every { athleteRepository.getAllAthletes() } returns listOf(athlete)
+
+        val uiStateList = mutableListOf<UIState<AthleteListUiModel>>()
+
+        athleteListViewModel = AthleteListViewModel(
+            addAthleteUseCase = addAthleteUseCase,
+            getAllAthletesUseCase = getAthleteUseCase,
+            dispatcher = testCoroutineDispatcher
+        )
+        val launchJob = launch {
+            athleteListViewModel.uiState.toList(uiStateList)
+        }
+
+        athleteListViewModel.addAthlete(athlete)
         athleteListViewModel.addAthlete(athlete)
         testCoroutineDispatcher.scheduler.advanceUntilIdle()
         launchJob.cancel()
